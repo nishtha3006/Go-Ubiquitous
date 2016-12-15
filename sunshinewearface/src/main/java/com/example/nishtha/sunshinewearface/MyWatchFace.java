@@ -35,6 +35,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class MyWatchFace extends CanvasWatchFaceService {
 
+    //reference https://github.com/xiaoyifan/Go-Ubiquitous--Udacity/blob/284dcc4b6c3702120fc13d41ab1cc93be2
+    // /sunshinewearface/src/main/java/com/uchicago/yifan/sunshinewearface/MyWatchFace.java
+
     private static final String TAG = "CanvasWatchFaceService";
 
     private static final Typeface NORMAL_TYPEFACE =
