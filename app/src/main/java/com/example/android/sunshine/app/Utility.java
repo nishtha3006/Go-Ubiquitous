@@ -17,19 +17,48 @@ package com.example.android.sunshine.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
 
 import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
+import com.google.android.gms.wearable.Asset;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public class Utility {
+
+    public static float DEFAULT_LATLONG = 0F;
+
+    public static boolean isLocationLatLonAvailable(Context context) {
+        SharedPreferences prefs
+                = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.contains(context.getString(R.string.pref_location_latitude))
+                && prefs.contains(context.getString(R.string.pref_location_longitude));
+    }
+
+    public static float getLocationLatitude(Context context) {
+        SharedPreferences prefs
+                = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getFloat(context.getString(R.string.pref_location_latitude),
+                DEFAULT_LATLONG);
+    }
+
+    public static float getLocationLongitude(Context context) {
+        SharedPreferences prefs
+                = PreferenceManager.getDefaultSharedPreferences(context);
+        return prefs.getFloat(context.getString(R.string.pref_location_longitude),
+                DEFAULT_LATLONG);
+    }
+
     public static String getPreferredLocation(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getString(context.getString(R.string.pref_location_key),
@@ -574,5 +603,24 @@ public class Utility {
         SharedPreferences.Editor spe = sp.edit();
         spe.putInt(c.getString(R.string.pref_location_status_key), SunshineSyncAdapter.LOCATION_STATUS_UNKNOWN);
         spe.apply();
+    }
+
+    static public Asset toAsset(Context context, int weatherId) {
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),
+                getIconResourceForWeatherCondition(weatherId));
+        ByteArrayOutputStream byteStream = null;
+        try {
+            byteStream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteStream);
+            return Asset.createFromBytes(byteStream.toByteArray());
+        } finally {
+            if (null != byteStream) {
+                try {
+                    byteStream.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
     }
 }
